@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,11 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid AuthenticationDto authDto){
-     
+
+        var passwordEncoder = new BCryptPasswordEncoder();
+        String senhaEncriptada = passwordEncoder.encode(authDto.senha());
+        System.out.println(senhaEncriptada);
+
         var autenticationToken =  new UsernamePasswordAuthenticationToken(authDto.login(), authDto.senha());
         var authentication = manager.authenticate(autenticationToken);
 

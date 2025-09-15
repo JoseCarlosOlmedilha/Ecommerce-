@@ -21,6 +21,6 @@ public interface ClientRepository extends JpaRepository<Client, Long>{
         INNER JOIN address a ON a.client_id = c.clienteId
         WHERE a.UfAddress = :uf
         """, nativeQuery = true)
-    List<Object[]> findClientsByUf(@Param("uf") String uf);
+    List<Client> findClientsByUf(@Param("uf") String uf);
 
 } 

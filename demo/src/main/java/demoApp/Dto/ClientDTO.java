@@ -25,6 +25,7 @@ public class ClientDTO {
     private String nome;
 
     @CPF
+    @NotEmpty
     private String cpf;
 
     @Email

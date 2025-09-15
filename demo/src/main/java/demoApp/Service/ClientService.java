@@ -12,6 +12,7 @@ import demoApp.Entities.Address;
 import demoApp.Entities.Client;
 import demoApp.Entities.Phone;
 import demoApp.Entities.Enums.UfAddress;
+import demoApp.Exception.RegisterException;
 import demoApp.Repository.ClientRepository;
 
 @Service
@@ -24,14 +25,25 @@ public class ClientService {
     public AddressService addressService;
 
 
-    public Client registerClient(ClientDTO clientDTO){
+    public ClientDTO registerClient(ClientDTO clientDTO){
         Client client = new Client();
 
         client = dtoParaClient(clientDTO);
 
         clientRepository.save(client);
 
-        return client;
+        return clientDTO;
+    }
+
+    public Boolean deletarCliente(Long id){
+        if(clientRepository.findById(id) == null){
+            throw new RegisterException("Não existe esse cliente, para realizar a exclusão");
+        }
+
+        clientRepository.deleteById(id);
+
+        return true;
+
     }
 
     public ClientDTO atualizarClient(ClientDTO clientDTO, Long id){
@@ -85,7 +97,6 @@ public class ClientService {
         return client;
     }
 
-   
     public ClientDTO clientToDTO(Client client) {
         ClientDTO dto = new ClientDTO();
 
@@ -110,8 +121,6 @@ public class ClientService {
         return dto;
     }
 
-
-
     private PhoneDTO convertToPhoneDTO(Phone phone) {
         PhoneDTO phoneDTO = new PhoneDTO();
         phoneDTO.setNumero(phone.getNumero());
@@ -120,11 +129,16 @@ public class ClientService {
         return phoneDTO;
     }
 
-    public void buscarClientesPorRegião(UfAddress uf){
+    public List<ClientDTO> buscarClientesPorRegião(UfAddress uf){
+        List<Client> client = clientRepository.findClientsByUf(uf.name());
+        
+        List<ClientDTO> clientDTO = client.stream()
+        .map( clien -> clientToDTO(clien))
+        .collect(Collectors.toList());
 
+
+        return clientDTO;
     }
-
-
 
 
 
