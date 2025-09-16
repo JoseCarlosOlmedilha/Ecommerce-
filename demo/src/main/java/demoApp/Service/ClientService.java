@@ -28,6 +28,9 @@ public class ClientService {
     public ClientDTO registerClient(ClientDTO clientDTO){
         Client client = new Client();
 
+        var cliente = clientRepository.findByCpf(clientDTO.getCpf())
+        .orElseThrow( () -> new RegisterException("Não foi possicel cadastrar Usuario, Cpf já cadastrado")) ;
+
         client = dtoParaClient(clientDTO);
 
         clientRepository.save(client);
@@ -36,11 +39,10 @@ public class ClientService {
     }
 
     public Boolean deletarCliente(Long id){
-        if(clientRepository.findById(id) == null){
-            throw new RegisterException("Não existe esse cliente, para realizar a exclusão");
-        }
 
-        clientRepository.deleteById(id);
+        var cliente = clientRepository.findById(id).orElseThrow(() -> new RegisterException("Não foi possível encontrar o cliente, para excluir"));
+
+        clientRepository.delete(cliente);
 
         return true;
 

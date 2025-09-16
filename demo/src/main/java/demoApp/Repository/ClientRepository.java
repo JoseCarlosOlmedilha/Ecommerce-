@@ -1,6 +1,7 @@
 package demoApp.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +23,7 @@ public interface ClientRepository extends JpaRepository<Client, Long>{
         WHERE a.UfAddress = :uf
         """, nativeQuery = true)
     List<Client> findClientsByUf(@Param("uf") String uf);
+
+    Optional<Client> findByCpf(String cpf);
 
 } 
