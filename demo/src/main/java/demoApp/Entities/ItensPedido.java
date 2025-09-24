@@ -1,11 +1,12 @@
 package demoApp.Entities;
 
-import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +25,12 @@ public class ItensPedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private List<Itens> produtos;
+    @ManyToOne
+    @JoinColumn(name = "produto_id") // nome da coluna no banco de dados
+    private Itens produtos;
 
+    @ManyToOne
+    @JoinColumn(name = "pedido_id")
     private Pedido pedido;
 
 

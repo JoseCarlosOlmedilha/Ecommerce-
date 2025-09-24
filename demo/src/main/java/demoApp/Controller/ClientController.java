@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import demoApp.Dto.ClientDTO;
 import demoApp.Entities.Enums.UfAddress;
 import demoApp.Service.ClientService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -27,50 +29,43 @@ public class ClientController {
 @Autowired
 private ClientService clientService;
 
-@PostMapping
-public ResponseEntity<ClientDTO> cadastrar(@RequestBody ClientDTO clientDTO) {
-    ClientDTO client = clientService.registerClient(clientDTO);
-    return ResponseEntity.ok().body(client);
+    @PostMapping
+    public ResponseEntity<ClientDTO> cadastrar(@Valid @RequestBody ClientDTO clientDTO) {
+        ClientDTO client = clientService.registerClient(clientDTO);
+        return ResponseEntity.ok().body(client);
 
-}
+    }
 
-@GetMapping("/{id}")
-public ResponseEntity<ClientDTO> buscarCliente(@PathVariable Long id){
-    ClientDTO client = clientService.buscarCliente(id);
-    return ResponseEntity.ok(client);
-}
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDTO> buscarCliente( @PathVariable Long id){
+        ClientDTO client = clientService.buscarCliente(id);
+        return ResponseEntity.ok(client);
+    }
 
-@DeleteMapping("/{id}")
-public ResponseEntity deletarCliente(@PathVariable Long id){
-    clientService.deletarCliente(id);
-    return ResponseEntity.noContent().build();
-}
+    @DeleteMapping("/{id}")
+    public ResponseEntity deletarCliente(@PathVariable Long id){
+        clientService.deletarCliente(id);
+        return ResponseEntity.noContent().build();
+    }
 
-@PutMapping("/{id}")
-public ResponseEntity<ClientDTO> atualizarCliente(@RequestBody ClientDTO clientDTO, @PathVariable Long id){
-    ClientDTO client = clientService.atualizarClient(clientDTO, id);
-    return ResponseEntity.ok(client);
-}
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientDTO> atualizarCliente(@Valid @RequestBody ClientDTO clientDTO, @PathVariable Long id){
+        ClientDTO client = clientService.atualizarClient(clientDTO, id);
+        return ResponseEntity.ok(client);
+    }
 
-@GetMapping
-public ResponseEntity<List<ClientDTO>> buscarTodosClientes() {
-    List<ClientDTO> clients = clientService.buscarTodosClient();
-    return ResponseEntity.ok(clients);
+    @GetMapping
+    public ResponseEntity<List<ClientDTO>> buscarTodosClientes() {
+        List<ClientDTO> clients = clientService.buscarTodosClient();
+        return ResponseEntity.ok(clients);
 
-}
+    }
 
-@GetMapping("/ClienteUF")
-public ResponseEntity<List<ClientDTO>> buscarClientesPorRegião(@RequestParam String uf) {
-    List<ClientDTO> clients = clientService.buscarClientesPorRegião(UfAddress.valueOf(uf.toUpperCase()));
-    return ResponseEntity.ok(clients);
-}
-
-
-
-
-
-
-
+    @GetMapping("/ClienteUF")
+    public ResponseEntity<List<ClientDTO>> buscarClientesPorRegião(@RequestParam String uf) {
+        List<ClientDTO> clients = clientService.buscarClientesPorRegião(UfAddress.valueOf(uf.toUpperCase()));
+        return ResponseEntity.ok(clients);
+    }
 
 
 }

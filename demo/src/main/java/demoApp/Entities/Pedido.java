@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import demoApp.Entities.Enums.StatusPedido;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,9 +48,9 @@ public class Pedido {
     private Double valorTotal;
 
     @Enumerated(EnumType.STRING)
-    private StatusPedido StatusPedido;
+    private StatusPedido statusPedido;
 
-    @Column(nullable = false)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItensPedido> itensPedidos;
 
 

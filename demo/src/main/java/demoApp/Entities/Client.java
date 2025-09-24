@@ -31,6 +31,7 @@ public class Client {
     @Column(name = "client_id")
     private Long clienteId;
 
+   
     @Column(nullable = false)
     private String name;
 

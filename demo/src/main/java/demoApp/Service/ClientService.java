@@ -24,12 +24,15 @@ public class ClientService {
     @Autowired
     public AddressService addressService;
 
+    @Autowired
+    public PhoneService phoneService;
+
 
     public ClientDTO registerClient(ClientDTO clientDTO){
         Client client = new Client();
-
-        var cliente = clientRepository.findByCpf(clientDTO.getCpf())
-        .orElseThrow( () -> new RegisterException("Não foi possicel cadastrar Usuario, Cpf já cadastrado")) ;
+        
+        clientRepository.findByCpf(clientDTO.getCpf())
+        .orElseThrow( () -> new RegisterException("Não foi possivel cadastrar Usuario, Cpf já cadastrado")) ;
 
         client = dtoParaClient(clientDTO);
 
@@ -115,20 +118,12 @@ public class ClientService {
 
         if (client.getPhone() != null && !client.getPhone().isEmpty()) {
             List<PhoneDTO> phoneDTOs = client.getPhone().stream()
-                .map(this::convertToPhoneDTO)
+                .map(phoneService::convertToPhoneDTO)
                 .collect(Collectors.toList());
             dto.setPhones(phoneDTOs);
         }
 
         return dto;
-    }
-
-    private PhoneDTO convertToPhoneDTO(Phone phone) {
-        PhoneDTO phoneDTO = new PhoneDTO();
-        phoneDTO.setNumero(phone.getNumero());
-        phoneDTO.setDdd(phone.getDdd());
-        phoneDTO.setTypePhone(phone.getTypePhone());
-        return phoneDTO;
     }
 
     public List<ClientDTO> buscarClientesPorRegião(UfAddress uf){
