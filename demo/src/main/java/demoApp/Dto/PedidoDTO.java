@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import demoApp.Entities.ItensPedido;
 import demoApp.Entities.Enums.StatusPedido;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,9 +26,11 @@ public class PedidoDTO {
 
     private Double valorTotal;
 
+    private Double desconto;
+
     private StatusPedido statusPedido;
 
-    private List<ItensPedido> itensPedidos;
+    private List<ItensPedidoDTO> itensPedidos;
 
 
 
