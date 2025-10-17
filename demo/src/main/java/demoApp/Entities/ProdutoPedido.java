@@ -18,8 +18,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tb_itens_pedido")
-public class ItensPedido {
+@Table(name = "tb_produto_pedido")
+public class ProdutoPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,9 @@ public class ItensPedido {
     
     @ManyToOne
     @JoinColumn(name = "produto_id") // nome da coluna no banco de dados
-    private Itens produtos;
+    private Produto produto;
+
+    private Integer quantidade;
 
     @ManyToOne
     @JoinColumn(name = "pedido_id")

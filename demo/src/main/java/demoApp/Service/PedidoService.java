@@ -7,12 +7,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import demoApp.Dto.ItensPedidoDTO;
-import demoApp.Dto.PedidoDTO;
-import demoApp.Entities.ItensPedido;
+import demoApp.Dto.PedidoEntradaDTO;
+import demoApp.Dto.PedidoSaidaDTO;
+import demoApp.Dto.ProdutoPedidoDTO;
+
 import java.util.stream.Collectors;             
 import demoApp.Entities.Pedido;
+import demoApp.Entities.Produto;
+import demoApp.Entities.ProdutoPedido;
 import demoApp.Entities.Enums.StatusPedido;
+import demoApp.Entities.Enums.StatusProduto;
 import demoApp.Repository.PedidoRepository;
 
 @Service
@@ -22,103 +26,123 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private ClientService ClientService;
+    private ClientService clientService;
 
+    @Autowired
+    private ProdutoService produtoService;  // para buscar Produto por ID
 
-    public Boolean RealizarPedido(PedidoDTO pedidoDTO){
-        Pedido pedido = converterDtOParaEntidade(pedidoDTO);
+    public PedidoSaidaDTO RealizarPedido(PedidoEntradaDTO pedidoDTO) {
+        Pedido pedido = converterDtoParaEntidade(pedidoDTO);
         pedido.setStatusPedido(StatusPedido.REALIZADO);
-        if(pedidoDTO.getDesconto() != null){
-            pedido.setValorTotal(AplicarDescontoPedido(pedidoDTO, pedidoDTO.getDesconto()));
+
+        pedido.getProdutoPedidos().forEach(produtoCapturado -> {
+            Produto produto = produtoCapturado.getProduto();
+            if (produto.getStatusProduto() != StatusProduto.DISPONIVEL) {
+                throw new RuntimeException("Produto " + produto.getNome() + " não está disponível");
+            }
+        });
+
+        // Aplica desconto se houver
+        if (pedidoDTO.getDesconto() != null) {
+            pedido.setValorTotal(aplicarDescontoPedido(pedido, pedidoDTO.getDesconto()));
         }
+
+        pedidoRepository.save(pedido);
+
+        return converterEntidadeParaDTO(pedido);
+    }
+
+    public Double aplicarDescontoPedido(Pedido pedido, Double valorDesconto) {
+        Double valor = pedido.getValorTotal() - valorDesconto;
+        return valor < 0 ? 0 : valor;  // evita valor negativo
+    }
+
+    public LocalDate calcularEntrega(LocalDate dataPedido, Integer dias) {
+        return dataPedido.plusDays(dias);
+    }
+
+    public Boolean cancelarPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        if (pedido.getStatusPedido() == StatusPedido.CANCELADO) {
+            return false; 
+        }
+        pedido.setStatusPedido(StatusPedido.CANCELADO);
         pedidoRepository.save(pedido);
         return true;
     }
 
-    public void TrocarStatusPedido(PedidoDTO pedidoDTO, StatusPedido novoStatus){
-
+    public PedidoSaidaDTO buscarPedidoPorId(Long id) {
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        return converterEntidadeParaDTO(pedido);
     }
 
-    public void CancelarPedido(PedidoDTO pedidoDTO){
-        pedidoDTO.setStatusPedido(StatusPedido.CANCELADO);
-        AtualizarPedido(pedidoDTO,  pedidoDTO.getId());
+    public List<PedidoSaidaDTO> listarTodosPedidos() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        return pedidos.stream()
+                .map(this::converterEntidadeParaDTO)
+                .collect(Collectors.toList());
     }
 
-    public Double AplicarDescontoPedido(PedidoDTO pedidoDTO, Double valorDesconto){
-        Double valor  = pedidoDTO.getValorTotal() - valorDesconto;
-        return valor;
+    public List<PedidoSaidaDTO> listarPedidosPorClienteId(Long clienteId) {
+        List<Pedido> pedidos = pedidoRepository.findByClienteId(clienteId);
+        return pedidos.stream()
+                .map(this::converterEntidadeParaDTO)
+                .collect(Collectors.toList());
     }
 
-    public void AtualizarPedido(PedidoDTO pedidoDTO, Long id){
+    public Pedido converterDtoParaEntidade(PedidoEntradaDTO pedidoDTO) {
+        Pedido pedido = new Pedido();
+        pedido.setCliente(clientService.dtoParaClient(pedidoDTO.getCliente()));
+        pedido.setDataPedido(LocalDateTime.now());
+        pedido.setDataEntrega(calcularEntrega(LocalDate.now(), 7));
 
-    }
+        List<ProdutoPedido> produtosPedido = pedidoDTO.getProdutoPedidos().stream()
+            .map(dto -> {
+                ProdutoPedido itemPedido = new ProdutoPedido();
+                itemPedido.setPedido(pedido);
+                itemPedido.setQuantidade(dto.getQuantidade());
 
-    public PedidoDTO BuscarPedido(Long id){
-        return converterEntidadeParaDTO(pedidoRepository.findById(id).get());
-    }
+                // Buscar produto pelo id
+                Produto produto = produtoService.buscarProdutoEntidadePorId(dto.getProdutos_id());
+                itemPedido.setProduto(produto);
 
-    public List<PedidoDTO> ListarPedidoPorCliente(Long id){
-        List<Pedido> pedidos = pedidoRepository.findPedidoByClients(id);
-        return pedidos.stream().map(this::converterEntidadeParaDTO).collect(Collectors.toList());
-
-    }
-
-    public List<Pedido> ListarTodosPedidos(){
-        return pedidoRepository.findAll();
-    }
-
-    public Double CalcularValorTotal(List<ItensPedidoDTO> itensPedidoDTO){
-
-        Double valorTotal = 0.0;
-        for (ItensPedidoDTO item : itensPedidoDTO) {
-            valorTotal += item.getProdutos().getPreco() * item.getProdutos().getQuantidade();
-        }
-        return valorTotal;
-    }
-
-    public LocalDate  CalcularEntrega(LocalDate dataPedido, Integer Dias){
-        return dataPedido.plusDays(Dias);
-
-    }
-
-    public Pedido converterDtOParaEntidade(PedidoDTO pedidoDTO){
-      Pedido pedido = new Pedido();
-      pedido.setCliente(ClientService.dtoParaClient(pedidoDTO.getCliente()));
-      pedido.setDataPedido(LocalDateTime.now());
-      pedido.setDataEntrega(CalcularEntrega(LocalDate.now(), 7));
-      pedido.setValorTotal(CalcularValorTotal(pedidoDTO.getItensPedidos()));
-      pedido.setItensPedidos(pedidoDTO.getItensPedidos().stream()
-            .map(dto -> { ItensPedido itensPedido = new ItensPedido();
-            itensPedido.setProdutos(dto.getProdutos());
-            itensPedido.setPedido(pedido);
-            return itensPedido;
+                return itemPedido;
             })
-            .collect(Collectors.toList())
-        );
-      return pedido;
+            .collect(Collectors.toList());
 
+        pedido.setProdutoPedidos(produtosPedido);
+
+        // Calcula valor total
+        Double valorTotal = produtosPedido.stream()
+            .mapToDouble(i -> i.getProduto().getPreco() * i.getQuantidade())
+            .sum();
+
+        pedido.setValorTotal(valorTotal);
+
+        return pedido;
     }
 
-    public PedidoDTO converterEntidadeParaDTO(Pedido pedido){
-        PedidoDTO pedidoDTO = new PedidoDTO();
-        pedidoDTO.setId(pedido.getId());
-        pedidoDTO.setCliente(ClientService.clientToDTO(pedido.getCliente()));
-        pedidoDTO.setDataPedido(pedido.getDataPedido());
-        pedidoDTO.setDataEntrega(pedido.getDataEntrega());
-        pedidoDTO.setValorTotal(pedido.getValorTotal());
-        pedidoDTO.setStatusPedido(pedido.getStatusPedido());
-        pedidoDTO.setItensPedidos(pedido.getItensPedidos().stream()
-            .map(item -> { ItensPedidoDTO itensPedidoDTO = new ItensPedidoDTO();
-            itensPedidoDTO.setProdutos(item.getProdutos());
-            itensPedidoDTO.setPedido(item.getPedido());
-            return itensPedidoDTO;
-            })
-            .collect(Collectors.toList())
-        );
-        return pedidoDTO;   
+    public PedidoSaidaDTO converterEntidadeParaDTO(Pedido pedido) {
+        PedidoSaidaDTO dto = new PedidoSaidaDTO();
+        dto.setId(pedido.getId());
+        dto.setCliente(clientService.clientToDTO(pedido.getCliente()));
+        dto.setDataPedido(pedido.getDataPedido());
+        dto.setDataEntrega(pedido.getDataEntrega());
+        dto.setValorTotal(pedido.getValorTotal());
+        dto.setStatusPedido(pedido.getStatusPedido());
 
+        dto.setProdutoPedidos(
+            pedido.getProdutoPedidos().stream()
+                .map(pp -> {
+                    ProdutoPedidoDTO produtoPedido = new ProdutoPedidoDTO();
+                    produtoPedido.setProdutos_id(pp.getProduto().getId());
+                    produtoPedido.setQuantidade(pp.getQuantidade());
+                    return produtoPedido; // <- Aqui estava faltando
+                })
+                .collect(Collectors.toList()) // <- Aqui fecha certinho o map
+        );
+
+        return dto;
     }
 
-
-    
 }

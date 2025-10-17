@@ -1,7 +1,6 @@
 package demoApp.Dto;
 
-import demoApp.Entities.Itens;
-import demoApp.Entities.Pedido;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +11,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItensPedidoDTO {
-
-
-    private Long id;
+public class ProdutoPedidoDTO {
     
-    private Itens produtos;
+    private Long produtos_id;
 
-    private Pedido pedido;
+    private Integer quantidade;
 
 }

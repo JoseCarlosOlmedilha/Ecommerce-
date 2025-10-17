@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import demoApp.Dto.AddressDTO;
 import demoApp.Dto.ClientDTO;
 import demoApp.Dto.PhoneDTO;
+import demoApp.Dto.Projection.ClientDetailsProjection;
 import demoApp.Entities.Address;
 import demoApp.Entities.Client;
 import demoApp.Entities.Phone;
@@ -31,8 +33,9 @@ public class ClientService {
     public ClientDTO registerClient(ClientDTO clientDTO){
         Client client = new Client();
         
-        clientRepository.findByCpf(clientDTO.getCpf())
-        .orElseThrow( () -> new RegisterException("Não foi possivel cadastrar Usuario, Cpf já cadastrado")) ;
+        clientRepository.findByCpf(clientDTO.getCpf()).ifPresent( _ -> {
+                throw new RegisterException("Não foi possivel cadastrar Usuario, Cpf já cadastrado");
+        });
 
         client = dtoParaClient(clientDTO);
 
@@ -41,9 +44,12 @@ public class ClientService {
         return clientDTO;
     }
 
+
     public Boolean deletarCliente(Long id){
 
-        var cliente = clientRepository.findById(id).orElseThrow(() -> new RegisterException("Não foi possível encontrar o cliente, para excluir"));
+        var cliente = clientRepository.findById(id).orElseThrow(() -> 
+            new RegisterException("Não foi possível encontrar o cliente, para excluir")
+        );
 
         clientRepository.delete(cliente);
 
@@ -51,20 +57,84 @@ public class ClientService {
 
     }
 
+
     public ClientDTO atualizarClient(ClientDTO clientDTO, Long id){
-        Client client = clientRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Client client = clientRepository.findById(id).orElseThrow(() -> 
+            new RegisterException("Cliente não encontrado")
+        );
+
+        client = atualizaClientComDTO(client, clientDTO);
+
+        clientRepository.save(client);
+
+        return clientToDTO(client);
+    }
+    
+
+    public Client atualizaClientComDTO(Client client, ClientDTO clientDTO) {
+        client.setName(clientDTO.getNome());
+        client.setCpf(clientDTO.getCpf());
+        client.setEmail(clientDTO.getEmail());
+        client.setDateOfBirth(clientDTO.getDateOfBirth());
+        client.setSexo(clientDTO.getSexo());
+
+        // Atualizar endereço existente, ou criar se null
+        if (client.getAddress() == null) {
+            Address novoEndereco = addressService.convertDTOtoAddress(clientDTO.getAddress());
+            novoEndereco.setClient(client);
+            client.setAddress(novoEndereco);
+        } else {
+            Address enderecoExistente = client.getAddress();
+            AddressDTO enderecoDTO = clientDTO.getAddress();
+            
+            enderecoExistente.setStreet(enderecoDTO.getStreet());
+            enderecoExistente.setCity(enderecoDTO.getCity());
+            enderecoExistente.setUf(enderecoDTO.getUf());
+            enderecoExistente.setNumber(enderecoDTO.getNumber());
+            enderecoExistente.setComplemento(enderecoDTO.getComplemento());
+            enderecoExistente.setCep(enderecoDTO.getCep());
+            enderecoExistente.setBairro(enderecoDTO.getBairro());
+        }
+
+        // Atualizar telefones — simplificado: limpar e adicionar os novos
+        client.getPhone().clear();
+
+        List<Phone> telefonesAtualizados = clientDTO.getPhones().stream()
+            .map(dto -> {
+                Phone phone = new Phone();
+                phone.setNumero(dto.getNumero());
+                phone.setTypePhone(dto.getTypePhone());
+                phone.setDdd(dto.getDdd());
+                phone.setClient(client);
+                return phone;
+            }).collect(Collectors.toList());
+
+        client.getPhone().addAll(telefonesAtualizados);
+
+        return client;
+    }
+
+
+/*
+    public ClientDTO atualizarClient(ClientDTO clientDTO, Long id){
+        Client client = clientRepository.findById(id).orElseThrow(() -> 
+            new RegisterException("Cliente não encontrado")
+        );
 
         Client clienteAtualizado = dtoParaClient(clientDTO);
-        clienteAtualizado.setClienteId(client.getClienteId());
+        clienteAtualizado.setId(client.getId());
 
         clientRepository.save(clienteAtualizado);
 
         return clientToDTO(clienteAtualizado);
 
     }
+*/ 
 
     public ClientDTO buscarCliente(Long id){
-        ClientDTO clientDto = clientToDTO(clientRepository.findById(id).orElseThrow( () -> new RuntimeException("Cliente não encontrado")));
+        ClientDTO clientDto = clientToDTO(clientRepository.findById(id).orElseThrow( () -> 
+            new RegisterException("Cliente não encontrado"))
+        );
 
         return clientDto;
     }
@@ -126,8 +196,14 @@ public class ClientService {
         return dto;
     }
 
+    public List<ClientDetailsProjection> buscarClientesPorRegião(UfAddress uf) {
+        return clientRepository.findClientsByUf(uf.name());
+    }
+
+
+/* 
     public List<ClientDTO> buscarClientesPorRegião(UfAddress uf){
-        List<Client> client = clientRepository.findClientsByUf(uf.name());
+        List<Client> client = clientRepository.findClientsByUf();
         
         List<ClientDTO> clientDTO = client.stream()
         .map( clien -> clientToDTO(clien))
@@ -136,7 +212,7 @@ public class ClientService {
 
         return clientDTO;
     }
-
+*/
 
 
 }

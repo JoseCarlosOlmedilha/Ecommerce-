@@ -3,7 +3,7 @@ package demoApp.Entities;
 import java.time.LocalDate;
 
 import demoApp.Entities.Enums.Categoria;
-import demoApp.Entities.Enums.StatusItem;
+import demoApp.Entities.Enums.StatusProduto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,8 +22,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tb_itens")
-public class Itens {
+@Table(name = "tb_produto")
+public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Itens {
     private String fornecedor;
 
     @Enumerated(EnumType.STRING)
-    private StatusItem statusItem;
+    private StatusProduto statusProduto;
 
     @Enumerated(EnumType.STRING)
     private Categoria categoria;

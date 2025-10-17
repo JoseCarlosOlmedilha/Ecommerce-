@@ -51,7 +51,7 @@ public class Pedido {
     private StatusPedido statusPedido;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItensPedido> itensPedidos;
+    private List<ProdutoPedido> produtoPedidos;
 
 
 

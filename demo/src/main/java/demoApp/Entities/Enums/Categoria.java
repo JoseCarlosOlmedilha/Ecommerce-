@@ -2,8 +2,7 @@ package demoApp.Entities.Enums;
 
 public enum Categoria {
 
-    VERÃO,
+    VERAO,
     INVERNO,
-    OUTONO,
     PRIMAVERA,
 }

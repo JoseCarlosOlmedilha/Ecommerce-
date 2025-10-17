@@ -3,9 +3,9 @@ package demoApp.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import demoApp.Entities.ItensPedido;
+import demoApp.Entities.ProdutoPedido;
 
 @Repository
-public interface ItensPedidoRepository extends JpaRepository<ItensPedido, Long> {
+public interface ProdutoPedidoRepository extends JpaRepository<ProdutoPedido, Long> {
 
 }

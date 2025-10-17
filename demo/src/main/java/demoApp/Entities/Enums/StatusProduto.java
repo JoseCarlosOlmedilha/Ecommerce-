@@ -1,6 +1,6 @@
 package demoApp.Entities.Enums;
 
-public enum StatusItem {
+public enum StatusProduto {
 
     DISPONIVEL,
     INDISPONIVEL

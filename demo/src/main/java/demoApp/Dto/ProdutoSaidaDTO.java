@@ -1,6 +1,7 @@
 package demoApp.Dto;
 
 import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.StatusProduto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItensSaidaDTO {
+public class ProdutoSaidaDTO {
 
     private Long id;
 
@@ -18,7 +19,7 @@ public class ItensSaidaDTO {
 
     private String fornecedor;
 
-    private String statusItem;
+    private StatusProduto statusProduto;
 
     private Categoria categoria;
 

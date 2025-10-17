@@ -1,7 +1,10 @@
 package demoApp.Dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import demoApp.Entities.Enums.StatusPedido;
 import lombok.AllArgsConstructor;
@@ -13,23 +16,22 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PedidoDTO {
+public class PedidoSaidaDTO {
 
     private Long id;
 
     private ClientDTO cliente;
 
-    private LocalDate dataPedido;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dataPedido;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataEntrega;
 
     private Double valorTotal;
 
     private StatusPedido statusPedido;
 
-    private Double desconto;
-
     private List<ProdutoPedidoDTO> ProdutoPedidos;
-    
 
 }

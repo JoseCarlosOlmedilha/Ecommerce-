@@ -2,7 +2,7 @@ package demoApp.Dto;
 
 import demoApp.Entities.Enums.TypePhone;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.Setter;
 public class PhoneDTO{
  
     
-    @NotEmpty(message = "Tipo de telefone é obrigatório")
+    @NotNull(message = "Tipo de telefone é obrigatório")
     private TypePhone typePhone;
 
     @NotBlank(message = "Número é obrigatório")

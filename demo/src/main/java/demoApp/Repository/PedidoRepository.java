@@ -14,11 +14,13 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
 
      @Query(value = """
-        SELECT p.id, i.produtos
-        FROM Pedido
-        JOIN ItemPedido i ON p.id = i.pedido.id
+        SELECT p.id, e.produto
+        FROM Pedido p
+        JOIN ProdutoPedido e ON p.id = e.pedido.id
         WHERE p.cliente.id = :id
         """, nativeQuery = false)
     List<Pedido> findPedidoByClients(@Param("id") Long id);
+
+    List<Pedido> findByClienteId(Long clienteId);
 
 }

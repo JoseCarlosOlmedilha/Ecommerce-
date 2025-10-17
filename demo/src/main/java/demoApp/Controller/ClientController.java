@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import demoApp.Dto.ClientDTO;
+import demoApp.Dto.Projection.ClientDetailsProjection;
 import demoApp.Entities.Enums.UfAddress;
 import demoApp.Service.ClientService;
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
-@RequestMapping(value = "/Client" )
+@RequestMapping(value = "/Cliente" )
 public class ClientController {
 
 @Autowired
@@ -61,11 +60,12 @@ private ClientService clientService;
 
     }
 
-    @GetMapping("/ClienteUF")
-    public ResponseEntity<List<ClientDTO>> buscarClientesPorRegião(@RequestParam String uf) {
-        List<ClientDTO> clients = clientService.buscarClientesPorRegião(UfAddress.valueOf(uf.toUpperCase()));
+    @GetMapping("/ClienteUF/{uf}")
+    public ResponseEntity<List<ClientDetailsProjection>> buscarClientesPorRegião(@PathVariable String uf) {
+        List<ClientDetailsProjection> clients = clientService.buscarClientesPorRegião(UfAddress.valueOf(uf.toUpperCase()));
         return ResponseEntity.ok(clients);
     }
+
 
 
 }
