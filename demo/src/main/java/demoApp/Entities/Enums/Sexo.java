@@ -1,6 +1,6 @@
 package demoApp.Entities.Enums;
 
-public enum SexoClient {
+public enum Sexo {
 
     MASCULINO,
     FEMININO

@@ -1,6 +1,6 @@
 package demoApp.Entities;
 
-import demoApp.Entities.Enums.UfAddress;
+import demoApp.Entities.Enums.UnidadeFederativa;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,24 +22,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tb_address")
-public class Address {
+@Table(name = "tb_endereco")
+public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long addressId;
+    private Long enderecoId;
 
     @Column(nullable = false, length = 150)
-    private String street;
+    private String rua;
 
     @Column(nullable = false, length = 50)
-    private String city;
+    private String cidade;
 
     @Enumerated(EnumType.STRING)
-    private UfAddress uf;
+    private UnidadeFederativa uf;
 
     @Column(nullable = false, length = 10)
-    private String number;
+    private String numeroResidencial;
 
     @Column(nullable = false, length = 100)
     private String complemento;
@@ -52,7 +52,7 @@ public class Address {
 
     @OneToOne
     @JoinColumn(name = "cliente_id", nullable = false, unique = true)
-    private Client client;
+    private Cliente cliente;
 
 
 }

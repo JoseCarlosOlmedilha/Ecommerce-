@@ -17,7 +17,7 @@ public class PedidoDTO {
 
     private Long id;
 
-    private ClientDTO cliente;
+    private ClienteDTO cliente;
 
     private LocalDate dataPedido;
 

@@ -11,7 +11,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
-import demoApp.Entities.User;
+import demoApp.Entities.Usuario;
+import demoApp.Exception.TokenException;
 
 @Service
 public class TokenService {
@@ -19,7 +20,7 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
     
-    public String gerarToken(User usuario){
+    public String gerarToken(Usuario usuario){
         try {
             var algoritmo = Algorithm.HMAC256(secret);
             return JWT.create()
@@ -28,7 +29,7 @@ public class TokenService {
                 .withExpiresAt(dataExpiracao())
                 .sign(algoritmo);
         } catch (JWTCreationException exception){
-            throw new RuntimeException("Erro ao gerar token jwt", exception);
+            throw new TokenException("Erro ao gerar token jwt", exception);
         }
     }
 
@@ -41,7 +42,7 @@ public class TokenService {
             .verify(tokenjwt)
             .getSubject();
         } catch (JWTVerificationException exception){
-            throw new RuntimeException("Token JWT inválido ou expirado!");
+            throw new TokenException("Token JWT inválido ou expirado!");
         }
     }
 

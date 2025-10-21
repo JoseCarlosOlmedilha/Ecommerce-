@@ -2,7 +2,7 @@ package demoApp.Entities;
 
 import java.time.LocalDate;
 
-import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.EstacaoClimatica;
 import demoApp.Entities.Enums.StatusProduto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +39,7 @@ public class Produto {
     private StatusProduto statusProduto;
 
     @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    private EstacaoClimatica categoria;
 
     @Column(nullable = false)
     private Double preco;

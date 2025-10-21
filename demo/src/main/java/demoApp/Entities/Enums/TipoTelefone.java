@@ -1,6 +1,6 @@
 package demoApp.Entities.Enums;
 
-public enum TypePhone {
+public enum TipoTelefone {
 
     CEL,
     RES,

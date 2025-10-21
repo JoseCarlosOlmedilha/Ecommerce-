@@ -4,17 +4,17 @@ import java.time.LocalDate;
 
 public interface ClientDetailsProjection {
 
-    String getName();
+    String getNome();
     String getSexo();
-    LocalDate getDateOfBirth();
+    LocalDate getDataAniversario();
     String getEmail();
-    String getTypePhone();
+    String getTipoStringTelefone();
     String getDdd();
     String getNumero();
-    String getStreet();
-    String getCity();
+    String getRua();
+    String getCidade();
     String getUf();
-    String getNumber();
+    String getNumeroResidencial();
     String getComplemento();
     String getCep();
     String getBairro();

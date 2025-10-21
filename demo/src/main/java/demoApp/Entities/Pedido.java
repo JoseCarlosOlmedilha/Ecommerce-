@@ -32,11 +32,11 @@ public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long pedidoId;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private Client cliente;
+    private Cliente cliente;
 
     @Column(nullable = false)
     private LocalDateTime dataPedido;

@@ -25,8 +25,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "usuarios")
-public class User implements UserDetails{
+@Table(name = "tb_usuario")
+public class Usuario implements UserDetails{
 
 
     @Id
@@ -39,7 +39,7 @@ public class User implements UserDetails{
 
     @OneToOne
     @JoinColumn(name = "client_id")  // FK para tabela de client
-    private Client client;
+    private Cliente cliente;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

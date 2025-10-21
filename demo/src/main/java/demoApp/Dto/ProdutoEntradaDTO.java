@@ -2,7 +2,7 @@ package demoApp.Dto;
 
 import java.time.LocalDate;
 
-import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.EstacaoClimatica;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +25,8 @@ public class ProdutoEntradaDTO {
     @NotBlank(message = "Fornecedor é obrigatório")
     private String fornecedor;
 
-    @NotNull(message = "Categoria é obrigatório")
-    private Categoria categoria;
+    @NotNull(message = "Estação é obrigatório")
+    private EstacaoClimatica estacao;
 
     @NotNull(message = "Preço é obrigatório")
     @Positive(message = "Preço deve ser maior que zero")

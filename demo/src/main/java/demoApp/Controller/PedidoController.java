@@ -23,6 +23,8 @@ public class PedidoController {
     @Autowired
     private PedidoService pedidoService;
     
+
+    //vistoria
     @PostMapping("/RealizarPedido")
     public ResponseEntity<PedidoSaidaDTO> RealizarPedido(@Valid @RequestBody PedidoEntradaDTO pedidoDTO){
         PedidoSaidaDTO pedidoSaidaDTO = pedidoService.RealizarPedido(pedidoDTO);

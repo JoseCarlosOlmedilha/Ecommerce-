@@ -1,6 +1,6 @@
 package demoApp.Entities.Enums;
 
-public enum Categoria {
+public enum EstacaoClimatica {
 
     VERAO,
     INVERNO,

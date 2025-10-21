@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import demoApp.Dto.ProdutoEntradaDTO;
 import demoApp.Dto.ProdutoSaidaDTO;
-import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.EstacaoClimatica;
 import demoApp.Service.ProdutoService;
 import jakarta.validation.Valid;
 
@@ -27,7 +27,7 @@ public class ProdutoController {
 
     @PostMapping("/Cadastrar")
     public ResponseEntity<ProdutoSaidaDTO> CadastrarProduto(@Valid @RequestBody ProdutoEntradaDTO entrada) {
-        ProdutoSaidaDTO produto =  produtoService.AdicionarNovoProduto(entrada);
+        ProdutoSaidaDTO produto =  produtoService.adicionarNovoProduto(entrada);
         return ResponseEntity.ok().body(produto);
 
     }
@@ -35,7 +35,7 @@ public class ProdutoController {
     //verificar se está zerado no estoque
     @PostMapping("/Desativar/{id}")
     public ResponseEntity<Boolean> DesativarItem(@Valid @PathVariable Long id){
-        Boolean resposta = produtoService.Desativarproduto(id);
+        Boolean resposta = produtoService.desativarproduto(id);
         return ResponseEntity.ok().body(resposta);
     }
 
@@ -43,9 +43,9 @@ public class ProdutoController {
     @GetMapping("/Categoria/{categoria}")
     public ResponseEntity<List<ProdutoSaidaDTO>> BuscarProdutoPorCategoria(@Valid @PathVariable String categoria){
 
-        Categoria categoriaEnum = Categoria.valueOf(categoria.toUpperCase());
+        EstacaoClimatica categoriaEnum = EstacaoClimatica.valueOf(categoria.toUpperCase());
 
-        List<ProdutoSaidaDTO> produto = (produtoService.BuscarprodutoPorCategoria(categoriaEnum));
+        List<ProdutoSaidaDTO> produto = (produtoService.buscarprodutoPorCategoria(categoriaEnum));
 
         return ResponseEntity.ok().body(produto);
     }
@@ -61,35 +61,35 @@ public class ProdutoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> AtualizarProduto(@Valid @RequestBody ProdutoEntradaDTO produtoDTO, @PathVariable Long id){
-        produtoService.AtualizarProduto(id, produtoDTO);
+        produtoService.atualizarProduto(id, produtoDTO);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/Listar")
     public ResponseEntity<List<ProdutoSaidaDTO>> ListarProdutos(){
-        return ResponseEntity.ok().body(produtoService.TodosProdutos());
+        return ResponseEntity.ok().body(produtoService.todosProdutos());
     }
 
     @GetMapping("/ListarDisponivel")
     public ResponseEntity<List<ProdutoSaidaDTO>> ListarProdutosDisponivel(){
 
-        return ResponseEntity.ok().body(produtoService.ListarProdutosDisponiveis());
+        return ResponseEntity.ok().body(produtoService.listarProdutosDisponiveis());
     }
     
     @GetMapping("/ListarIndisponivel")
     public ResponseEntity<List<ProdutoSaidaDTO>> ListarIndisponivel(){
-        return ResponseEntity.ok().body(produtoService.ListarProdutosIndisponivel());
+        return ResponseEntity.ok().body(produtoService.listarProdutosIndisponivel());
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ProdutoSaidaDTO> BuscarPorId(@PathVariable Long id){
-        ProdutoSaidaDTO produto = produtoService.BuscarProdutoPorId(id);
+        ProdutoSaidaDTO produto = produtoService.buscarProdutoPorId(id);
         return ResponseEntity.ok().body(produto);
     }
 
     @GetMapping("/nome/{nome}")
     public ResponseEntity<ProdutoSaidaDTO> BuscarProdutoPorNome(@PathVariable String nome){
-        ProdutoSaidaDTO produto = produtoService.BuscarProdutoPorNome(nome);
+        ProdutoSaidaDTO produto = produtoService.buscarProdutoPorNome(nome);
         return ResponseEntity.ok().body(produto);
     }
 

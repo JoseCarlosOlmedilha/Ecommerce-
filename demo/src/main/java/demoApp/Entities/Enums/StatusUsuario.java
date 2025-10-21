@@ -1,6 +1,6 @@
 package demoApp.Entities.Enums;
 
-public enum StatusUser {
+public enum StatusUsuario {
 
     ATIVO,
     INATIVO,

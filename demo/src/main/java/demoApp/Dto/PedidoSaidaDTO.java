@@ -20,7 +20,7 @@ public class PedidoSaidaDTO {
 
     private Long id;
 
-    private ClientDTO cliente;
+    private ClienteDTO cliente;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataPedido;

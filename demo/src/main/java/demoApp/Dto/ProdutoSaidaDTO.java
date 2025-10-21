@@ -1,6 +1,6 @@
 package demoApp.Dto;
 
-import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.EstacaoClimatica;
 import demoApp.Entities.Enums.StatusProduto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class ProdutoSaidaDTO {
 
     private StatusProduto statusProduto;
 
-    private Categoria categoria;
+    private EstacaoClimatica categoria;
 
     private Double preco;
 

@@ -1,6 +1,6 @@
 package demoApp.Entities;
 
-import demoApp.Entities.Enums.TypePhone;
+import demoApp.Entities.Enums.TipoTelefone;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,15 +22,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tb_phone")
-public class Phone {
+@Table(name = "tb_telefone")
+public class Telefone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long phoneId;
+    private Long telefoneId;
 
     @Enumerated(EnumType.STRING)
-    private TypePhone typePhone;
+    private TipoTelefone tipoTelefone;
 
     @Column(nullable = false, length = 9)
     private String numero;
@@ -40,5 +40,5 @@ public class Phone {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false) 
-    private Client client;
-    }
+    private Cliente cliente;
+}

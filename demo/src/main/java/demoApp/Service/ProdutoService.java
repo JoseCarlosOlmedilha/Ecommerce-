@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import demoApp.Dto.ProdutoEntradaDTO;
 import demoApp.Dto.ProdutoSaidaDTO;
-import demoApp.Entities.Client;
+import demoApp.Entities.Cliente;
 import demoApp.Entities.Produto;
-import demoApp.Entities.Enums.Categoria;
+import demoApp.Entities.Enums.EstacaoClimatica;
 import demoApp.Entities.Enums.StatusProduto;
 import demoApp.Exception.ProdutoException;
-import demoApp.Repository.ClientRepository;
+import demoApp.Repository.ClienteRepository;
 import demoApp.Repository.ProdutoRepository;
+import demoApp.Validation.ProdutoValidation.ValidadorProduto;
 
 @Service
 public class ProdutoService {
@@ -21,25 +22,28 @@ public class ProdutoService {
     private ProdutoRepository produtoRepository;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private WeatherService weatherService;
 
-    public ProdutoSaidaDTO AdicionarNovoProduto(ProdutoEntradaDTO produtoEntradaDTO){
-        if(produtoRepository.existsByNome(produtoEntradaDTO.getNome())){
-                throw new ProdutoException("Produto já existe, codigo do produto:" +
-                                produtoRepository.findByNome(produtoEntradaDTO.getNome()).getId());
-        }
+    @Autowired
+    List<ValidadorProduto> validadorProdutos;
 
-        Produto produto = ConverterDtoParaEntidade(produtoEntradaDTO);
+    public ProdutoSaidaDTO adicionarNovoProduto(ProdutoEntradaDTO produtoEntradaDTO){
+     
+        validadorProdutos.forEach(v -> v.validar(produtoEntradaDTO));
+
+        Produto produto = converterDtoParaEntidade(produtoEntradaDTO);
         produtoRepository.save(produto);
 
-        ProdutoSaidaDTO produtoSaidaDto = ConverterEntidadeParaDto(produto);
+        
+
+        ProdutoSaidaDTO produtoSaidaDto = converterEntidadeParaDto(produto);
         return produtoSaidaDto;
     }
 
-    public Boolean Desativarproduto(Long id){
+    public Boolean desativarproduto(Long id){
 
         Produto produto = produtoRepository.findById(id).orElseThrow(() -> 
             new ProdutoException("produto não encontrado")
@@ -53,64 +57,62 @@ public class ProdutoService {
 
     public List<ProdutoSaidaDTO> buscarProdutoAutomatico(Long id){
 
-        Client client = clientRepository.findById(id).orElseThrow(()
+        Cliente cliente = clienteRepository.findById(id).orElseThrow(()
                      -> new RuntimeException("Cliente não encontrado"));;
 
-        Categoria categoria = obterCategoriaPorCidade(client.getAddress().getCity());
+        EstacaoClimatica categoria = obterCategoriaPorCidade(cliente.getEndereco().getCidade());
 
 
         List<Produto> produto = produtoRepository.findByCategoria(categoria);
        
         List<ProdutoSaidaDTO> produtoDto = produto.stream()
-            .map(this::ConverterEntidadeParaDto)
+            .map(this::converterEntidadeParaDto)
             .toList();
         return produtoDto;
        
     }
 
-
-    public List<ProdutoSaidaDTO> BuscarprodutoPorCategoria(Categoria categoria){
+    public List<ProdutoSaidaDTO> buscarprodutoPorCategoria(EstacaoClimatica categoria){
 
         List<Produto> produto = produtoRepository.findByCategoria(categoria);
        
         List<ProdutoSaidaDTO> produtoDto = produto.stream()
-            .map(this::ConverterEntidadeParaDto)
+            .map(this::converterEntidadeParaDto)
             .toList();
         return produtoDto;
        
     }
 
-    public Categoria obterCategoriaPorCidade(String cidade) {
+    public EstacaoClimatica obterCategoriaPorCidade(String cidade) {
         Double temperatura = weatherService.getTemperatureByCity(cidade);
-        return ClassificarTemperatura(temperatura); 
+        return classificarTemperatura(temperatura); 
 
     }
 
-    public Categoria ClassificarTemperatura(Double temperatura){
+    public EstacaoClimatica classificarTemperatura(Double temperatura){
         if (temperatura <= 17) {
-            return Categoria.INVERNO;
+            return EstacaoClimatica.INVERNO;
         } else if (temperatura <= 24) {
-            return Categoria.PRIMAVERA;
+            return EstacaoClimatica.PRIMAVERA;
         } else {
-            return Categoria.VERAO;
+            return EstacaoClimatica.VERAO;
         }
 
     }
-    
 
-    public Double PegarTemperatura(String cidade){
+    public Double pegarTemperatura(String cidade){
             
         Double temperatura = weatherService.getTemperatureByCity(cidade);
 
         return temperatura;
     }
 
-    public void AtualizarProduto(Long id, ProdutoEntradaDTO produtoEntradaDTO){
+    public void atualizarProduto(Long id, ProdutoEntradaDTO produtoEntradaDTO){
         Produto produto = produtoRepository.findById(id).orElseThrow(() -> 
             new ProdutoException("produto não encontrado")
         );
         produto.setNome(produtoEntradaDTO.getNome());
-        produto.setCategoria(produtoEntradaDTO.getCategoria());
+        produto.setCategoria(produtoEntradaDTO.getEstacao());
         produto.setFornecedor(produtoEntradaDTO.getFornecedor());
         produto.setDataCompra(produtoEntradaDTO.getDataCompra());
         produto.setPreco(produtoEntradaDTO.getPreco());
@@ -124,36 +126,36 @@ public class ProdutoService {
 
     }
 
-    public List<ProdutoSaidaDTO> TodosProdutos(){
+    public List<ProdutoSaidaDTO> todosProdutos(){
         List<Produto> produtos = produtoRepository.findAll();
 
         List<ProdutoSaidaDTO> produtosDto = produtos.stream()
-            .map(this::ConverterEntidadeParaDto)
+            .map(this::converterEntidadeParaDto)
             .toList();
         return produtosDto;
     }
 
-    public List<ProdutoSaidaDTO> ListarProdutosDisponiveis(){
+    public List<ProdutoSaidaDTO> listarProdutosDisponiveis(){
         List<Produto> produtos = produtoRepository.findByStatusProduto(StatusProduto.DISPONIVEL);
         List<ProdutoSaidaDTO> produtosDto = produtos.stream()
-            .map(this::ConverterEntidadeParaDto)
+            .map(this::converterEntidadeParaDto)
             .toList();
         return produtosDto;
     }
 
-    public List<ProdutoSaidaDTO> ListarProdutosIndisponivel(){
+    public List<ProdutoSaidaDTO> listarProdutosIndisponivel(){
         List<Produto> Produtos = produtoRepository.findByStatusProduto(StatusProduto.INDISPONIVEL);
         List<ProdutoSaidaDTO> produtosDto = Produtos.stream()
-            .map(this::ConverterEntidadeParaDto)
+            .map(this::converterEntidadeParaDto)
             .toList();
         return produtosDto;
     }
 
-    public ProdutoSaidaDTO BuscarProdutoPorId(Long id){
+    public ProdutoSaidaDTO buscarProdutoPorId(Long id){
         Produto produto = produtoRepository.findById(id).orElseThrow(() -> 
             new ProdutoException("produto não encontrado")
         );
-        ProdutoSaidaDTO produtoDto = ConverterEntidadeParaDto(produto);
+        ProdutoSaidaDTO produtoDto = converterEntidadeParaDto(produto);
         return produtoDto;
 
     }
@@ -166,20 +168,20 @@ public class ProdutoService {
 
     }
 
-    public ProdutoSaidaDTO BuscarProdutoPorNome(String nome){
+    public ProdutoSaidaDTO buscarProdutoPorNome(String nome){
         Produto produto = produtoRepository.findByNome(nome);
         if(produto == null){
             throw new ProdutoException("produto não encontrado");
         } 
 
-        ProdutoSaidaDTO produtoDto = ConverterEntidadeParaDto(produto);
+        ProdutoSaidaDTO produtoDto = converterEntidadeParaDto(produto);
         return produtoDto;
     }
 
-    public Produto ConverterDtoParaEntidade(ProdutoEntradaDTO produtoEntradaDTO){
+    public Produto converterDtoParaEntidade(ProdutoEntradaDTO produtoEntradaDTO){
         Produto produto = new Produto();
         produto.setNome(produtoEntradaDTO.getNome());
-        produto.setCategoria(produtoEntradaDTO.getCategoria());
+        produto.setCategoria(produtoEntradaDTO.getEstacao());
         produto.setFornecedor(produtoEntradaDTO.getFornecedor());
         produto.setDataCompra(produtoEntradaDTO.getDataCompra());
         produto.setPreco(produtoEntradaDTO.getPreco());
@@ -193,7 +195,7 @@ public class ProdutoService {
         return produto;
     }
 
-    public ProdutoSaidaDTO ConverterEntidadeParaDto(Produto Produtos){
+    public ProdutoSaidaDTO converterEntidadeParaDto(Produto Produtos){
         ProdutoSaidaDTO produtoDto = new ProdutoSaidaDTO();
         produtoDto.setNome(Produtos.getNome());
         produtoDto.setCategoria(Produtos.getCategoria());

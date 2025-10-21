@@ -1,7 +1,5 @@
 package demoApp.Dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PedidoEntradaDTO {
+public class AlterarStatusClienteDTO {
 
-    private ClienteDTO cliente;
-
-    private Double desconto;
-
-    private List<ProdutoPedidoDTO> ProdutoPedidos;
-
-
+    private String cpf;
 
 }

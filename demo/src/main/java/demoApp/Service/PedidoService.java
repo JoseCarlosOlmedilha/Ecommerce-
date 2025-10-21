@@ -26,12 +26,13 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private ClientService clientService;
+    private ClienteService clienteService;
 
     @Autowired
-    private ProdutoService produtoService;  // para buscar Produto por ID
+    private ProdutoService produtoService; 
 
     public PedidoSaidaDTO RealizarPedido(PedidoEntradaDTO pedidoDTO) {
+
         Pedido pedido = converterDtoParaEntidade(pedidoDTO);
         pedido.setStatusPedido(StatusPedido.REALIZADO);
 
@@ -42,7 +43,6 @@ public class PedidoService {
             }
         });
 
-        // Aplica desconto se houver
         if (pedidoDTO.getDesconto() != null) {
             pedido.setValorTotal(aplicarDescontoPedido(pedido, pedidoDTO.getDesconto()));
         }
@@ -54,7 +54,7 @@ public class PedidoService {
 
     public Double aplicarDescontoPedido(Pedido pedido, Double valorDesconto) {
         Double valor = pedido.getValorTotal() - valorDesconto;
-        return valor < 0 ? 0 : valor;  // evita valor negativo
+        return valor < 0 ? 0 : valor; 
     }
 
     public LocalDate calcularEntrega(LocalDate dataPedido, Integer dias) {
@@ -92,7 +92,7 @@ public class PedidoService {
 
     public Pedido converterDtoParaEntidade(PedidoEntradaDTO pedidoDTO) {
         Pedido pedido = new Pedido();
-        pedido.setCliente(clientService.dtoParaClient(pedidoDTO.getCliente()));
+        pedido.setCliente(clienteService.converterDTOParaCliente(pedidoDTO.getCliente()));
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setDataEntrega(calcularEntrega(LocalDate.now(), 7));
 
@@ -124,8 +124,8 @@ public class PedidoService {
 
     public PedidoSaidaDTO converterEntidadeParaDTO(Pedido pedido) {
         PedidoSaidaDTO dto = new PedidoSaidaDTO();
-        dto.setId(pedido.getId());
-        dto.setCliente(clientService.clientToDTO(pedido.getCliente()));
+        dto.setId(pedido.getPedidoId());
+        dto.setCliente(clienteService.converterClienteParaDto(pedido.getCliente()));
         dto.setDataPedido(pedido.getDataPedido());
         dto.setDataEntrega(pedido.getDataEntrega());
         dto.setValorTotal(pedido.getValorTotal());
