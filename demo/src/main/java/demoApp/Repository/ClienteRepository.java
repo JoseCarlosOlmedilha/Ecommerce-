@@ -18,15 +18,27 @@ import jakarta.transaction.Transactional;
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 
     @Query(value = """
-        SELECT c.nome AS nome, c.sexo AS sexo, c.data_aniversario AS data_aniversario, c.email AS email,
-            t.tipo_telefone AS tipo_telefone, t.ddd AS ddd, t.numero AS numero,
-            e.rua AS rua, e.cidade AS cidade, e.uf AS uf, e.numero AS numero,
-            e.complemento AS complemento, e.cep AS cep, e.bairro AS bairro
-        FROM tb_cliente c
-        INNER JOIN tb_telefone t ON t.client_id = c.cliente_id
-        INNER JOIN tb_endereco e ON e.cliente_id = c.cliente_id
-        WHERE e.uf = :uf
-        """, nativeQuery = true)
+                    SELECT 
+                        c.nome AS nome,
+                        c.sexo AS sexo,
+                        c.data_aniversario AS dataAniversario,
+                        c.email AS email,
+                    GROUP_CONCAT(CONCAT(t.tipo_telefone, ': (', t.ddd, ') ', t.numero) SEPARATOR ' | ') AS telefones,
+                        e.rua AS rua,
+                        e.cidade AS cidade,
+                        e.uf AS uf,
+                        e.numero_residencial AS numeroResidencial,
+                        e.complemento AS complemento,
+                        e.cep AS cep,
+                        e.bairro AS bairro
+                    FROM tb_cliente c
+                    INNER JOIN tb_telefone t ON t.client_id = c.cliente_id
+                    INNER JOIN tb_endereco e ON e.cliente_id = c.cliente_id
+                    WHERE e.uf = :uf
+                    GROUP BY c.cliente_id, c.nome, c.sexo, c.data_aniversario, c.email,
+                            e.rua, e.cidade, e.uf, e.numero_residencial, e.complemento, e.cep, e.bairro
+                    ORDER BY c.nome
+                """, nativeQuery = true)
     List<ClientDetailsProjection> findClientesByUf(@Param("uf") String uf);
 
     Optional<Cliente> findByCpf(String cpf);

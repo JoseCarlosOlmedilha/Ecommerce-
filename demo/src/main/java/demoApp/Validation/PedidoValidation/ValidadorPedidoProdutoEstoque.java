@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import demoApp.Dto.PedidoEntradaDTO;
 import demoApp.Dto.ProdutoPedidoDTO;
 import demoApp.Exception.ProdutoException;
 import demoApp.Repository.ProdutoRepository;
 
+@Component
 public class ValidadorPedidoProdutoEstoque implements ValidadorPedido{
 
     private ProdutoRepository produtoRepository;

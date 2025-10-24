@@ -47,7 +47,7 @@ public class Endereco {
     @Column(nullable = false)
     private String cep;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 30)
     private String bairro;
 
     @OneToOne

@@ -8,9 +8,7 @@ public interface ClientDetailsProjection {
     String getSexo();
     LocalDate getDataAniversario();
     String getEmail();
-    String getTipoStringTelefone();
-    String getDdd();
-    String getNumero();
+    String getTelefones(); // <-- campo único concatenado
     String getRua();
     String getCidade();
     String getUf();
@@ -18,5 +16,6 @@ public interface ClientDetailsProjection {
     String getComplemento();
     String getCep();
     String getBairro();
-    
 }
+    
+

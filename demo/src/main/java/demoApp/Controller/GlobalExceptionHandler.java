@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import demoApp.Exception.ErroResponse;
 import demoApp.Exception.ProdutoException;
 import demoApp.Exception.TokenException;
+import demoApp.Exception.UsuarioException;
 import demoApp.Exception.PedidoException;
 import demoApp.Exception.ClienteException;
 
@@ -72,6 +73,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UsuarioException.class)
+    public ResponseEntity<ErroResponse> handlePedidoException(UsuarioException ex) {
+        ErroResponse erro = new ErroResponse(
+            ex.getMessage(),
+            HttpStatus.BAD_REQUEST.value()
+        );
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
 
 
 }

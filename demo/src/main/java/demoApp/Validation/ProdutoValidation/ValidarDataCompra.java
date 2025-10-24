@@ -3,9 +3,12 @@ package demoApp.Validation.ProdutoValidation;
 import java.time.LocalDate;
 import java.time.Period;
 
+import org.springframework.stereotype.Component;
+
 import demoApp.Dto.ProdutoEntradaDTO;
 import demoApp.Exception.ProdutoException;
 
+@Component
 public class ValidarDataCompra implements ValidadorProduto{
 
     @Override

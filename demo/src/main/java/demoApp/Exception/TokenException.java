@@ -2,7 +2,7 @@ package demoApp.Exception;
 
 public class TokenException extends RuntimeException{
 
-        public TokenException(String message) {
+    public TokenException(String message) {
         super(message);
     }
 

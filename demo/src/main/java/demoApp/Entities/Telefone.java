@@ -39,6 +39,6 @@ public class Telefone {
     private String ddd;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false) 
+    @JoinColumn(name = "cliente_id", nullable = false) 
     private Cliente cliente;
 }

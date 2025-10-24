@@ -28,6 +28,7 @@ public class SecurityConfig {
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+        .requestMatchers(HttpMethod.POST, "/usuario/cadastrar").permitAll()
         .requestMatchers("/error").permitAll()
         .anyRequest().authenticated()
         )

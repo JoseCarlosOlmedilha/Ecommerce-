@@ -11,8 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,10 +34,6 @@ public class Usuario implements UserDetails{
     private String login;
 
     private String senha;
-
-    @OneToOne
-    @JoinColumn(name = "client_id")  // FK para tabela de client
-    private Cliente cliente;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
